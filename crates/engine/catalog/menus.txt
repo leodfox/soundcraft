@@ -365,39 +365,39 @@ Event > MIDI Real-Time Properties
 Event > Remove Duplicate Notes
 Event > Add Key Change...
 Event > Extract Chords from Selection
-Event > Beat Detective
+Event > Beat Analysis
 Event > Identify Beat...
 Event > Renumber Bars...
 Event > All MIDI Notes Off
 Event > Retrospective Record
-AudioSuite > EQ > Channel Strip
-AudioSuite > EQ > EQ3 1-Band
-AudioSuite > EQ > EQ3 7-Band
-AudioSuite > Dynamics > BF-76
-AudioSuite > Dynamics > Channel Strip
-AudioSuite > Dynamics > Dyn3 Compressor/Limiter
-AudioSuite > Dynamics > Dyn3 De-Esser
-AudioSuite > Dynamics > Dyn3 Expander/Gate
-AudioSuite > Dynamics > Maxim
-AudioSuite > Pitch Shift > Pitch II
-AudioSuite > Pitch Shift > Pitch Shift Legacy
-AudioSuite > Pitch Shift > Time Shift
-AudioSuite > Pitch Shift > Vari-Fi
-AudioSuite > Reverb > D-Verb
-AudioSuite > Delay > Mod Delay III
-AudioSuite > Modulation > Sci-Fi
-AudioSuite > Harmonic > Eleven Lite
-AudioSuite > Harmonic > Lo-Fi
-AudioSuite > Harmonic > Recti-Fi
-AudioSuite > Harmonic > SansAmp PSA-1
-AudioSuite > Other > DC Offset Removal
-AudioSuite > Other > Duplicate
-AudioSuite > Other > Gain
-AudioSuite > Other > Invert
-AudioSuite > Other > Normalize
-AudioSuite > Other > Reverse
-AudioSuite > Other > Signal Generator
-AudioSuite > Other > Time Compression Expansion
+Offline > EQ > Channel Strip
+Offline > EQ > EQ3 1-Band
+Offline > EQ > EQ3 7-Band
+Offline > Dynamics > BF-76
+Offline > Dynamics > Channel Strip
+Offline > Dynamics > Dyn3 Compressor/Limiter
+Offline > Dynamics > Dyn3 De-Esser
+Offline > Dynamics > Dyn3 Expander/Gate
+Offline > Dynamics > Maxim
+Offline > Pitch Shift > Pitch II
+Offline > Pitch Shift > Pitch Shift Legacy
+Offline > Pitch Shift > Time Shift
+Offline > Pitch Shift > Vari-Fi
+Offline > Reverb > D-Verb
+Offline > Delay > Mod Delay III
+Offline > Modulation > Sci-Fi
+Offline > Harmonic > Eleven Lite
+Offline > Harmonic > Lo-Fi
+Offline > Harmonic > Recti-Fi
+Offline > Harmonic > SansAmp PSA-1
+Offline > Other > DC Offset Removal
+Offline > Other > Duplicate
+Offline > Other > Gain
+Offline > Other > Invert
+Offline > Other > Normalize
+Offline > Other > Reverse
+Offline > Other > Signal Generator
+Offline > Other > Time Compression Expansion
 Options > Destructive Record
 Options > Loop Record
 Options > QuickPunch
@@ -502,10 +502,10 @@ Window > UI Customization
 Window > Metadata Inspector
 Window > Undo History
 Window > Transcript
-Window > Pro Tools Search
+Window > Search
 Window > Renderer
 Window > Trim and Downmix
-Window > Collaboration > Pro Tools Projects
+Window > Collaboration > Projects
 Window > Collaboration > Find Talent
 Window > Collaboration > Messages
 Window > Disk Usage
