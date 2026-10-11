@@ -70,8 +70,18 @@ struct WebShell(SoundApp);
 impl eframe::App for WebShell {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         // Files from the Ardoise host (bridge `open`) and files dropped on the page.
-        let mut files = INBOX.with(|i| std::mem::take(&mut *i.borrow_mut()));
-        files.extend(ctx.input(|i| i.raw.dropped_files.iter().filter_map(|f| f.bytes.as_ref().map(|b| (f.name.clone(), b.to_vec()))).collect::<Vec<_>>()));
+        let dropped: Vec<web_sys::File> = ctx.input(|i| i.raw.dropped_files.iter().filter_map(|f| f.web_file().cloned()).collect());
+        for file in dropped {
+            let ctx = ctx.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                if let Ok(buf) = wasm_bindgen_futures::JsFuture::from(file.array_buffer()).await {
+                    let data = js_sys::Uint8Array::new(&buf).to_vec();
+                    INBOX.with(|i| i.borrow_mut().push((file.name(), data)));
+                    ctx.request_repaint();
+                }
+            });
+        }
+        let files = INBOX.with(|i| std::mem::take(&mut *i.borrow_mut()));
         for (name, bytes) in files {
             match import_bytes(&mut self.0, &name, bytes) {
                 Ok(()) => self.0.ui.status = format!("Imported {name}"),
