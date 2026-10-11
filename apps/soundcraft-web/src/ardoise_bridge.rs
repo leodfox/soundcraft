@@ -127,16 +127,30 @@ pub fn install_bridge(on_open: impl Fn(String, wasm_bindgen::JsValue) + 'static)
     }
 }
 
-/// Native-format save inside an iframe: hand the bytes to the host instead of downloading.
-/// Returns true when the bytes were posted (the caller then skips the browser download).
+/// True when the page is embedded with a valid `?parentOrigin=` (the host may never send `open`:
+/// the editor then starts blank).
+#[allow(dead_code)]
+pub fn active() -> bool {
+    parent_origin().is_some()
+}
+
+/// Single-file save or export inside an iframe: hand the bytes to the host instead of downloading
+/// (bridge v2). `export` is false for the native document format. Returns true when posted.
 #[allow(dead_code)]
 pub fn post_saved(name: &str, bytes: &[u8]) -> bool {
     let ext = name.rsplit('.').next().map(str::to_ascii_lowercase).unwrap_or_default();
-    if !in_iframe() || parent_origin().is_none() || !NATIVE_EXTS.contains(&ext.as_str()) {
+    if !in_iframe() || parent_origin().is_none() {
         return false;
     }
+    let export = !NATIVE_EXTS.contains(&ext.as_str());
     let buffer = js_sys::Uint8Array::from(bytes).buffer();
-    let msg = message(&[("type", "saved".into()), ("app", ARDOISE_APP.into()), ("name", name.into()), ("bytes", buffer.into())]);
+    let msg = message(&[
+        ("type", "saved".into()),
+        ("app", ARDOISE_APP.into()),
+        ("name", name.into()),
+        ("bytes", buffer.into()),
+        ("export", export.into()),
+    ]);
     match post_to_parent(&msg) {
         Ok(()) => true,
         Err(e) => {

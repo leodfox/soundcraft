@@ -45,7 +45,7 @@ pub fn start() {
                         INBOX.with(|i| i.borrow_mut().push((name, data)));
                         ctx.request_repaint();
                     });
-                    let engine = if query().contains("empty") { Engine::default() } else { soundcraft_engine::demo::demo_engine() };
+                    let engine = if query().contains("empty") || crate::ardoise_bridge::active() { Engine::default() } else { soundcraft_engine::demo::demo_engine() };
                     let player = soundcraft_playback::Player::new(Arc::new(engine.session().clone()));
                     let app = SoundApp::new(engine, Some(player), Services::default());
                     Ok(Box::new(WebShell(app)))
@@ -101,6 +101,20 @@ impl eframe::App for WebShell {
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.0.ui(ui);
+        // Ardoise: offline mixdown to a single WAV, posted to the host (or downloaded standalone).
+        let mut clicked = false;
+        egui::Area::new(egui::Id::new("ardoise-export-mix")).anchor(egui::Align2::RIGHT_TOP, egui::vec2(-8.0, 30.0)).show(ui.ctx(), |ui| {
+            clicked = ui.button("Export mix (WAV)").clicked();
+        });
+        if clicked {
+            match export_mix(&self.0) {
+                Ok(()) => self.0.ui.status = "Mix exported".into(),
+                Err(e) => {
+                    log::warn!("export mix: {e}");
+                    self.0.ui.status = e;
+                }
+            }
+        }
     }
 }
 
@@ -117,5 +131,38 @@ fn import_bytes(app: &mut SoundApp, name: &str, bytes: Vec<u8>) -> Result<(), St
     };
     result.map_err(|e| e.to_string())?;
     engine.push_undo("Import", before);
+    Ok(())
+}
+
+/// Render the session offline to one WAV file and hand it to the host (bridge v2, `export: true`);
+/// outside an iframe it is downloaded.
+fn export_mix(app: &SoundApp) -> Result<(), String> {
+    use soundcraft_audio_io::{BitDepth, EncodeOptions};
+    let e = &app.engine;
+    let end = e.session().content_end().max(1);
+    let format = soundcraft_audio_io::encode_format_for("wav").ok_or("no WAV encoder")?;
+    let opts = EncodeOptions { format, bit_depth: BitDepth::Int24, dither: true, bwf: None };
+    let range = soundcraft_time::Range::new(0, end);
+    let (bytes, _) = soundcraft_engine::io::bounce_bytes_with(e, range, &opts, false, false).map_err(|err| err.to_string())?;
+    let name = format!("{}.wav", soundcraft_engine::io::sanitize_name(&e.session().name));
+    if crate::ardoise_bridge::post_saved(&name, &bytes) {
+        return Ok(());
+    }
+    download(&name, &bytes)
+}
+
+fn download(name: &str, bytes: &[u8]) -> Result<(), String> {
+    let js = |e: wasm_bindgen::JsValue| format!("{e:?}");
+    let document = web_sys::window().and_then(|w| w.document()).ok_or("no document")?;
+    let parts = js_sys::Array::of1(&js_sys::Uint8Array::from(bytes));
+    let bag = web_sys::BlobPropertyBag::new();
+    bag.set_type("audio/wav");
+    let blob = web_sys::Blob::new_with_u8_array_sequence_and_options(&parts, &bag).map_err(js)?;
+    let url = web_sys::Url::create_object_url_with_blob(&blob).map_err(js)?;
+    let a: web_sys::HtmlAnchorElement = document.create_element("a").map_err(js)?.dyn_into().map_err(|_| "not an anchor")?;
+    a.set_href(&url);
+    a.set_download(name);
+    a.click();
+    let _ = web_sys::Url::revoke_object_url(&url);
     Ok(())
 }
