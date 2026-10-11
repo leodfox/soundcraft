@@ -84,7 +84,7 @@ impl Remote {
         }
         let sock = self.addr.parse().map_err(|e| format!("{}: {e}", self.addr))?;
         let s =
-            TcpStream::connect_timeout(&sock, Duration::from_millis(800)).map_err(|e| format!("cannot reach SoundCraft at {}: {e}", self.addr))?;
+            TcpStream::connect_timeout(&sock, Duration::from_millis(800)).map_err(|e| format!("cannot reach Ardoise Son at {}: {e}", self.addr))?;
         s.set_read_timeout(Some(Duration::from_secs(120))).map_err(|e| e.to_string())?;
         let r = s.try_clone().map_err(|e| e.to_string())?;
         self.conn = Some((s, BufReader::new(r)));
@@ -128,7 +128,7 @@ impl Backend for Remote {
         true
     }
     fn describe(&self) -> String {
-        format!("SoundCraft app at {}", self.addr)
+        format!("Ardoise Son app at {}", self.addr)
     }
 }
 

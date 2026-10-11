@@ -85,7 +85,7 @@ pub fn import(e: &mut Engine, path: &str, first: Option<TrackId>, at: Samples) -
     let text = std::fs::read_to_string(path).map_err(|err| EngineError::Io(format!("{path}: {err}")))?;
     let file: GroupFile = serde_json::from_str(&text).map_err(|err| EngineError::BadParams(id.into(), format!("not a clip group file: {err}")))?;
     if file.format != FORMAT {
-        return Err(EngineError::BadParams(id.into(), "not a SoundCraft clip group file".into()));
+        return Err(EngineError::BadParams(id.into(), "not a Ardoise Son clip group file".into()));
     }
     if file.lanes.iter().map(Vec::len).sum::<usize>() > MAX_CLIPS {
         return Err(EngineError::BadParams(id.into(), "clip group file has too many clips".into()));

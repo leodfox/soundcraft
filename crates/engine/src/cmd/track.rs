@@ -189,7 +189,7 @@ pub fn specs() -> Vec<CommandSpec> {
         )),
         cmd!(
             "track.elastic",
-            "Elastic Audio",
+            "Stretch Audio",
             [],
             None,
             "{tracks?, algorithm?: polyphonic|rhythmic|monophonic|varispeed|x-form|none}",

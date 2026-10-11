@@ -87,7 +87,7 @@ fn beat_detective(app: &mut SoundApp, ctx: &egui::Context) {
     if !open {
         return;
     }
-    egui::Window::new("Beat Detective").open(&mut open).default_size(vec2(360.0, 220.0)).show(ctx, |ui| {
+    egui::Window::new("Beat Analysis").open(&mut open).default_size(vec2(360.0, 220.0)).show(ctx, |ui| {
         ui.label("Analyses the edit selection on the selected tracks.");
         ui.add(egui::Slider::new(&mut app.ops.beat_sensitivity, 0.0..=1.0).text("Sensitivity"));
         ui.checkbox(&mut app.ops.beat_separate, "Separate clips at detected beats");

@@ -125,7 +125,7 @@ pub fn specs() -> Vec<CommandSpec> {
         ),
         cmd!(
             "event.beat_detective",
-            "Beat Detective",
+            "Beat Analysis",
             ["Event"],
             None,
             "{tracks?, start?, end?, sensitivity?: 0.5, separate?: false, set_tempo?: false}",

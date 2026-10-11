@@ -11,9 +11,9 @@ pub const SESSION_EXTENSION: &str = "scraft";
 
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
 pub enum SessionError {
-    #[error("not a SoundCraft session: {0}")]
+    #[error("not a Ardoise Son session: {0}")]
     Format(String),
-    #[error("session file version {0} is newer than this SoundCraft supports")]
+    #[error("session file version {0} is newer than this Ardoise Son supports")]
     Version(u32),
     #[error("{0}")]
     Invalid(String),

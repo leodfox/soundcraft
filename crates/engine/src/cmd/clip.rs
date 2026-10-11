@@ -122,7 +122,7 @@ pub fn specs() -> Vec<CommandSpec> {
             "Elastic Properties",
             ["Clip"],
             Some("Alt+5"),
-            "{clips?, ratio?: 1.0} — on Elastic Audio tracks (polyphonic/rhythmic/monophonic/x-form) the stretch is rendered pitch-preserving; elsewhere it is varispeed",
+            "{clips?, ratio?: 1.0} — on Stretch Audio tracks (polyphonic/rhythmic/monophonic/x-form) the stretch is rendered pitch-preserving; elsewhere it is varispeed",
             has_selection,
             elastic
         ),

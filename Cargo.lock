@@ -3623,6 +3623,7 @@ version = "0.5.0"
 dependencies = [
  "eframe",
  "egui",
+ "js-sys",
  "log",
  "soundcraft-engine",
  "soundcraft-playback",

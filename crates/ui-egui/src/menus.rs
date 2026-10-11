@@ -20,7 +20,7 @@ pub const UI_COMMANDS: &[(&str, &str, &str, Option<&str>)] = &[
     ("window.narrow_mix", "Narrow Mix", "View > Narrow Mix", Some("Cmd+Alt+M")),
     ("window.session_info", "Session Info", "", None),
     ("window.audio_health", "Session Audio Health", "", None),
-    ("window.about", "About SoundCraft", "", None),
+    ("window.about", "About Ardoise Son", "", None),
     ("window.close", "Close Window", "Window > Close Window", Some("Cmd+W")),
     ("window.hide_floating", "Hide All Floating Windows", "Window > Hide All Floating Windows", Some("Cmd+Ctrl+W")),
     ("window.midi_editor", "MIDI Editor", "Window > MIDI Editor", None),
@@ -54,9 +54,9 @@ pub const UI_COMMANDS: &[(&str, &str, &str, Option<&str>)] = &[
     ("window.midi_back", "MIDI Editors to Back", "Window > MIDI Editors > Send to Back", None),
     ("window.clip_effects", "Clip Effects", "Window > Clip Effects", None),
     ("window.clip_effects_dock", "Clip Effects", "View > Other Displays > Lower Dock > Clip Effects", None),
-    ("window.search", "Search", "Window > Pro Tools Search", Some("Cmd+Ctrl+S")),
+    ("window.search", "Search", "Window > Search", Some("Cmd+Ctrl+S")),
     ("window.score", "Score Editor", "Window > Score Editor", Some("Cmd+Ctrl+=")),
-    ("window.beat_detective", "Beat Detective", "", None),
+    ("window.beat_detective", "Beat Analysis", "", None),
     ("window.tempo_ops", "Tempo Operations", "", None),
     ("window.time_ops", "Time Operations", "", None),
     ("window.midi_ops", "MIDI Operations", "", None),
@@ -111,34 +111,34 @@ fn mix_view_aliases() -> &'static [(&'static str, &'static str)] {
 
 /// AudioSuite catalog entries → our processes (functional equivalents, our own plugins).
 pub const AUDIOSUITE: &[(&str, &str)] = &[
-    ("AudioSuite > EQ > Channel Strip", "channel_strip"),
-    ("AudioSuite > EQ > EQ3 1-Band", "eq_1band"),
-    ("AudioSuite > EQ > EQ3 7-Band", "eq_7band"),
-    ("AudioSuite > Dynamics > BF-76", "compressor"),
-    ("AudioSuite > Dynamics > Channel Strip", "channel_strip"),
-    ("AudioSuite > Dynamics > Dyn3 Compressor/Limiter", "compressor"),
-    ("AudioSuite > Dynamics > Dyn3 De-Esser", "de_esser"),
-    ("AudioSuite > Dynamics > Dyn3 Expander/Gate", "expander_gate"),
-    ("AudioSuite > Dynamics > Maxim", "maximizer"),
-    ("AudioSuite > Pitch Shift > Pitch II", "pitch_shift"),
-    ("AudioSuite > Pitch Shift > Pitch Shift Legacy", "pitch_shift"),
-    ("AudioSuite > Pitch Shift > Time Shift", "time_stretch"),
-    ("AudioSuite > Pitch Shift > Vari-Fi", "varispeed"),
-    ("AudioSuite > Reverb > D-Verb", "room_reverb"),
-    ("AudioSuite > Delay > Mod Delay III", "mod_delay"),
-    ("AudioSuite > Modulation > Sci-Fi", "flanger"),
-    ("AudioSuite > Harmonic > Eleven Lite", "saturator"),
-    ("AudioSuite > Harmonic > Lo-Fi", "lofi"),
-    ("AudioSuite > Harmonic > Recti-Fi", "rectifier"),
-    ("AudioSuite > Harmonic > SansAmp PSA-1", "saturator"),
-    ("AudioSuite > Other > DC Offset Removal", "dc_offset_removal"),
-    ("AudioSuite > Other > Duplicate", "duplicate"),
-    ("AudioSuite > Other > Gain", "gain"),
-    ("AudioSuite > Other > Invert", "invert"),
-    ("AudioSuite > Other > Normalize", "normalize"),
-    ("AudioSuite > Other > Reverse", "reverse"),
-    ("AudioSuite > Other > Signal Generator", "signal_generator"),
-    ("AudioSuite > Other > Time Compression Expansion", "time_stretch"),
+    ("Offline > EQ > Channel Strip", "channel_strip"),
+    ("Offline > EQ > EQ3 1-Band", "eq_1band"),
+    ("Offline > EQ > EQ3 7-Band", "eq_7band"),
+    ("Offline > Dynamics > BF-76", "compressor"),
+    ("Offline > Dynamics > Channel Strip", "channel_strip"),
+    ("Offline > Dynamics > Dyn3 Compressor/Limiter", "compressor"),
+    ("Offline > Dynamics > Dyn3 De-Esser", "de_esser"),
+    ("Offline > Dynamics > Dyn3 Expander/Gate", "expander_gate"),
+    ("Offline > Dynamics > Maxim", "maximizer"),
+    ("Offline > Pitch Shift > Pitch II", "pitch_shift"),
+    ("Offline > Pitch Shift > Pitch Shift Legacy", "pitch_shift"),
+    ("Offline > Pitch Shift > Time Shift", "time_stretch"),
+    ("Offline > Pitch Shift > Vari-Fi", "varispeed"),
+    ("Offline > Reverb > D-Verb", "room_reverb"),
+    ("Offline > Delay > Mod Delay III", "mod_delay"),
+    ("Offline > Modulation > Sci-Fi", "flanger"),
+    ("Offline > Harmonic > Eleven Lite", "saturator"),
+    ("Offline > Harmonic > Lo-Fi", "lofi"),
+    ("Offline > Harmonic > Recti-Fi", "rectifier"),
+    ("Offline > Harmonic > SansAmp PSA-1", "saturator"),
+    ("Offline > Other > DC Offset Removal", "dc_offset_removal"),
+    ("Offline > Other > Duplicate", "duplicate"),
+    ("Offline > Other > Gain", "gain"),
+    ("Offline > Other > Invert", "invert"),
+    ("Offline > Other > Normalize", "normalize"),
+    ("Offline > Other > Reverse", "reverse"),
+    ("Offline > Other > Signal Generator", "signal_generator"),
+    ("Offline > Other > Time Compression Expansion", "time_stretch"),
 ];
 
 /// Commands that open a dialog when invoked from a menu (programmatic calls never do).
@@ -206,8 +206,8 @@ pub fn menu_bar(app: &mut SoundApp, ui: &mut egui::Ui) {
         ui,
         |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
-                ui.menu_button("SoundCraft", |ui| {
-                    if ui.button("About SoundCraft").clicked() {
+                ui.menu_button("Ardoise Son", |ui| {
+                    if ui.button("About Ardoise Son").clicked() {
                         app.ui.show_about = true;
                     }
                     if ui.button("Session Info").clicked() {
@@ -227,7 +227,7 @@ pub fn menu_bar(app: &mut SoundApp, ui: &mut egui::Ui) {
                         for c in &root.children {
                             menu_node(app, ui, c, &extra);
                         }
-                        if root.label == "AudioSuite" {
+                        if root.label == "Offline" {
                             ui.separator();
                             ui.label(egui::RichText::new("Processes selected clips offline").small().color(t.text_dim));
                         }
@@ -379,7 +379,7 @@ const MENU_WINDOWS: &[(&str, &str)] = &[
     ("Setup > I/O...", "window.io_setup"),
     ("Setup > Keyboard Shortcuts...", "window.shortcuts"),
     ("Setup > Session", "setup.session"),
-    ("Event > Beat Detective", "window.beat_detective"),
+    ("Event > Beat Analysis", "window.beat_detective"),
     ("Event > Tempo Operations > Tempo Operations Window", "window.tempo_ops"),
     ("Event > Time Operations > Time Operations Window", "window.time_ops"),
     ("Event > MIDI Operations > MIDI Operations Window", "window.midi_ops"),

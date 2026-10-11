@@ -25,7 +25,7 @@ pub fn tool_definitions() -> Vec<Value> {
     vec![
         tool(
             "list_commands",
-            "List SoundCraft commands (id, label, menu path, shortcut, params doc, enabled).",
+            "List Ardoise Son commands (id, label, menu path, shortcut, params doc, enabled).",
             json!({"filter": {"type": "string", "description": "substring of id or label"}}),
             &[],
         ),

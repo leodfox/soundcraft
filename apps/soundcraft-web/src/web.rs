@@ -3,7 +3,13 @@
 use soundcraft_engine::Engine;
 use soundcraft_ui_egui::{Services, SoundApp};
 use std::sync::Arc;
+use std::cell::RefCell;
 use wasm_bindgen::JsCast as _;
+
+thread_local! {
+    /// Files pushed by the embedding host (Ardoise bridge `open`), imported on the next frame.
+    static INBOX: RefCell<Vec<(String, Vec<u8>)>> = const { RefCell::new(Vec::new()) };
+}
 
 const CANVAS_ID: &str = "soundcraft_canvas";
 const LOADING_ID: &str = "soundcraft_loading";
@@ -33,6 +39,12 @@ pub fn start() {
                     if let Some(rs) = &cc.wgpu_render_state {
                         log::info!("soundcraft-web: wgpu backend {:?}", rs.adapter.get_info().backend);
                     }
+                    let ctx = cc.egui_ctx.clone();
+                    crate::ardoise_bridge::install_bridge(move |name, bytes| {
+                        let data = js_sys::Uint8Array::new(&bytes).to_vec();
+                        INBOX.with(|i| i.borrow_mut().push((name, data)));
+                        ctx.request_repaint();
+                    });
                     let engine = if query().contains("empty") { Engine::default() } else { soundcraft_engine::demo::demo_engine() };
                     let player = soundcraft_playback::Player::new(Arc::new(engine.session().clone()));
                     let app = SoundApp::new(engine, Some(player), Services::default());
@@ -43,7 +55,7 @@ pub fn start() {
         if let Some(el) = document.get_element_by_id(LOADING_ID) {
             match result {
                 Ok(()) => el.remove(),
-                Err(e) => el.set_inner_html(&format!("<p>SoundCraft failed to start: {e:?}</p><p>A browser with WebGPU or WebGL2 is required.</p>")),
+                Err(e) => el.set_inner_html(&format!("<p>Échec du démarrage d’Ardoise Son : {e:?}</p><p>Un navigateur avec WebGPU ou WebGL2 est requis.</p>")),
             }
         }
     });
@@ -57,6 +69,19 @@ struct WebShell(SoundApp);
 
 impl eframe::App for WebShell {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        // Files from the Ardoise host (bridge `open`) and files dropped on the page.
+        let mut files = INBOX.with(|i| std::mem::take(&mut *i.borrow_mut()));
+        files.extend(ctx.input(|i| i.raw.dropped_files.iter().filter_map(|f| f.bytes.as_ref().map(|b| (f.name.clone(), b.to_vec()))).collect::<Vec<_>>()));
+        for (name, bytes) in files {
+            match import_bytes(&mut self.0, &name, bytes) {
+                Ok(()) => self.0.ui.status = format!("Imported {name}"),
+                Err(e) => {
+                    log::warn!("import {name}: {e}");
+                    self.0.ui.status = e;
+                }
+            }
+            ctx.request_repaint();
+        }
         self.0.logic(ctx);
     }
 
@@ -67,4 +92,20 @@ impl eframe::App for WebShell {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.0.ui(ui);
     }
+}
+
+/// Import a file as audio, MIDI or video (one undo step), like the desktop Import commands.
+fn import_bytes(app: &mut SoundApp, name: &str, bytes: Vec<u8>) -> Result<(), String> {
+    use soundcraft_engine::io;
+    let ext = name.rsplit('.').next().map(str::to_ascii_lowercase).unwrap_or_default();
+    let engine = &mut app.engine;
+    let before = engine.session_arc();
+    let result = match ext.as_str() {
+        "mid" | "midi" => io::import_midi_bytes(engine, &bytes, 0, true).map(|_| ()),
+        "mp4" | "m4v" | "mov" => io::import_video_bytes(engine, name, bytes, 0).map(|_| ()),
+        _ => io::import_audio_bytes(engine, name, &bytes, None, None, 0).map(|_| ()),
+    };
+    result.map_err(|e| e.to_string())?;
+    engine.push_undo("Import", before);
+    Ok(())
 }

@@ -9,7 +9,7 @@ use soundcraft_model::{Clip, ClipContent};
 pub fn specs() -> Vec<CommandSpec> {
     vec![cmd!(
         "audiosuite.process",
-        "AudioSuite Process",
+        "Offline Process",
         [],
         None,
         "{process: <plugin id> | normalize | reverse | invert | gain | duplicate | time_stretch | pitch_shift | varispeed | signal_generator, params?: {..}, clips?}",

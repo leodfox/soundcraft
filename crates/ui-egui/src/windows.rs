@@ -180,7 +180,7 @@ fn task_manager(app: &mut SoundApp, ctx: &egui::Context) {
     win(ctx, &mut open, "Task Manager", vec2(320.0, 120.0), |ui| {
         ui.label("No background tasks are running.");
         ui.label(
-            egui::RichText::new("Renders, bounces and AudioSuite processes run to completion before returning.")
+            egui::RichText::new("Renders, bounces and offline processes run to completion before returning.")
                 .small()
                 .color(Tokens::current().text_dim),
         );
